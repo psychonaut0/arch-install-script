@@ -4,3 +4,5 @@ CURRENT_DIR="$(dirname "${BASH_SOURCE[0]}")"
 
 source "${CURRENT_DIR}/functions/progress.sh"
 source "${CURRENT_DIR}/functions/select-disk.sh"
+source "${CURRENT_DIR}/functions/select-partition.sh"
+source "${CURRENT_DIR}/functions/root-checker.sh"

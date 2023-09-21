@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Lists all disks on the system
 list_disks() {
   local disks
@@ -9,24 +11,23 @@ list_disks() {
 }
 
 select_disk() {
-  local selected_disk_var=$1  # Il nome del parametro in cui verrà salvato il disco selezionato
-
+  local selected_disk_var=$1 
   echo "Available disks:"
   list_disks
 
   read -p "Choose the installation disk for Arch Linux: " disk_number
 
-  # Verifica se l'input è un numero valido
+  # check for valid number
   if ! [[ "$disk_number" =~ ^[0-9]+$ ]]; then
     echo "Insert a valid number."
-    select_disk "$selected_disk_var"  # Richiama la funzione con lo stesso parametro
+    select_disk "$selected_disk_var"
     return
   fi
 
   local disks
   disks=($(lsblk -dplnx size -o name | grep -Ev "boot|rpmb|loop"))
 
-  # Verifica se il numero selezionato è valido
+  # check if the number is in range
   if ((disk_number < 1 || disk_number > ${#disks[@]})); then
     echo "Invalid number. choose a number from the list"
     select_disk "$selected_disk_var"  # Richiama la funzione con lo stesso parametro
@@ -35,6 +36,6 @@ select_disk() {
 
   local selected_disk="${disks[disk_number-1]}"
 
-  # Assegna il valore alla variabile passata come parametro
+  # Assign the selected disk to the variable passed as parameter
   eval "$selected_disk_var=$selected_disk"
 }
