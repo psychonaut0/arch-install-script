@@ -3,6 +3,7 @@
 select_partition() {
   local selected_disk=$1
   local selected_partition_var=$2
+  local partition_type_check=$3
   local count=0
 
   # Print headers
@@ -30,16 +31,30 @@ select_partition() {
 
   # check for valid number
   if ! [[ "$partition_number" =~ ^[0-9]+$ ]]; then
-    echo "Insert a valid number."
-    select_partition "$selected_disk" "$selected_partition_var"
+    clear
+    echo -e "${RED}Insert a valid number.${NC}"
+    select_partition "$selected_disk" "$selected_partition_var  "
     return
   fi
 
   # check if the number is in range
   if ((partition_number < 1 || partition_number > ${#dev[@]})); then
-    echo "Invalid number. choose a number from the list"
+    clear
+    echo -e "${RED}Invalid number. choose a number from the list${NC}"
     select_partition "$selected_disk" "$selected_partition_var"  # Richiama la funzione con lo stesso parametro
     return
+  fi
+
+  # Check if selected partition match the type code using gdisk
+  if [[ "$partition_type_check" != "" ]]; then
+    local selected_partition_type=$(gdisk -l "$selected_disk" | awk -v partition_number="$partition_number" '$1 == partition_number {print $6}' | grep -o '[[:alnum:]]\+')
+    echo "Selected partition type: $selected_partition_type"
+    if [[ "$selected_partition_type" != "$partition_type_check" ]]; then
+      clear
+      echo -e "${RED}Invalid partition type. Choose a partition with type $partition_type_check ${NC}"
+      select_partition "$selected_disk" "$selected_partition_var" "$partition_type_check"
+      return
+    fi
   fi
 
   local selected_partition="${dev[partition_number]}"

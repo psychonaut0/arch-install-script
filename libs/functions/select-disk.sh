@@ -19,7 +19,8 @@ select_disk() {
 
   # check for valid number
   if ! [[ "$disk_number" =~ ^[0-9]+$ ]]; then
-    echo "Insert a valid number."
+    clear
+    echo -e "${RED}Insert a valid number.${NC}"
     select_disk "$selected_disk_var"
     return
   fi
@@ -29,7 +30,8 @@ select_disk() {
 
   # check if the number is in range
   if ((disk_number < 1 || disk_number > ${#disks[@]})); then
-    echo "Invalid number. choose a number from the list"
+    clear
+    echo -e "${RED}Invalid number. choose a number from the list${NC}"
     select_disk "$selected_disk_var"  # Richiama la funzione con lo stesso parametro
     return
   fi
