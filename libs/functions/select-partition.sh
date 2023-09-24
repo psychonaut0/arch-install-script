@@ -33,7 +33,7 @@ select_partition() {
   if ! [[ "$partition_number" =~ ^[0-9]+$ ]]; then
     clear
     echo -e "${RED}Insert a valid number.${NC}"
-    select_partition "$selected_disk" "$selected_partition_var  "
+    select_partition "$selected_disk" "$selected_partition_var"
     return
   fi
 
@@ -41,7 +41,15 @@ select_partition() {
   if ((partition_number < 1 || partition_number > ${#dev[@]})); then
     clear
     echo -e "${RED}Invalid number. choose a number from the list${NC}"
-    select_partition "$selected_disk" "$selected_partition_var"  # Richiama la funzione con lo stesso parametro
+    select_partition "$selected_disk" "$selected_partition_var" 
+    return
+  fi
+
+  # check if the number is the last one
+  if ((partition_number == ${#dev[@]})); then
+    clear
+    echo -e "${GREEN}Creating new partition${NC}"
+    create_partition "$selected_disk" "$selected_partition_var" "$partition_type_check"
     return
   fi
 
@@ -52,6 +60,16 @@ select_partition() {
     if [[ "$selected_partition_type" != "$partition_type_check" ]]; then
       clear
       echo -e "${RED}Invalid partition type. Choose a partition with type $partition_type_check ${NC}"
+      select_partition "$selected_disk" "$selected_partition_var" "$partition_type_check"
+      return
+    fi
+  fi
+
+  # If partition is non empty, ask for confirmation
+  local selected_partition_size=$(lsblk -n -o SIZE "${dev[partition_number]}")
+  if [[ "$selected_partition_size" != "0B" ]]; then
+    read -p "$(echo -e ${YELLOW}The selected partition is not empty. Are you sure you want to use it? [y/N]${NC}) " confirm
+    if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
       select_partition "$selected_disk" "$selected_partition_var" "$partition_type_check"
       return
     fi
