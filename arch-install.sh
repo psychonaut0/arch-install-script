@@ -10,6 +10,9 @@ source "${CURRENT_DIR}/libs/main.sh"
 root_checker
 clear
 
+sleep 2 &
+spinner 
+
 
 select_disk SELECTED_DISK
 clear

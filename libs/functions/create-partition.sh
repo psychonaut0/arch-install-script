@@ -10,10 +10,11 @@ create_partition() {
   # Get the disk label
   local disk_label=$(fdisk -l $selected_disk | grep -w "Disklabel type:" | awk '{print $3}')
 
-  # If no disk label create a new one in GPT format
+  # If no disk label create a new one in GPT format and wait for job to finish
   if [[ "$disk_label" == "" ]]; then
-    echo -e "${GREEN}Creating new partition table${NC}"
-    parted -s "$selected_disk" mklabel gpt
+    echo -e "${GREEN}Creating new GPT disk label${NC}"
+    parted -s "$selected_disk" mklabel gpt &
+    spinner
   fi
 
   # If the disk label is not GPT, exit
@@ -22,7 +23,24 @@ create_partition() {
     exit 1
   fi
 
-  
+  # If the disk label is GPT, create a new partition with the type passed as parameter
+  local new_partition_name
+  case "$partition_type_check" in
+    "EF00")
+      new_partition_name="EFI"
+      ;;
+    "8300")
+      new_partition_name="ROOT"
+      ;;
+    "8200")
+      new_partition_name="SWAP"
+      ;;
+    *)
+      echo -e "${RED}Invalid partition type. Exiting${NC}"
+      exit 1
+      ;;
+  esac
+
 
   # Set the new partition
   eval "$selected_partition_var=$new_partition_name"
