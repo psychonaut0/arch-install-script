@@ -12,9 +12,12 @@ create_partition() {
 
   # If no disk label create a new one in GPT format and wait for job to finish
   if [[ "$disk_label" == "" ]]; then
+    echo -e "No disk label found."
     echo -e "${GREEN}Creating new GPT disk label${NC}"
     parted -s "$selected_disk" mklabel gpt &
     spinner
+    # Assign new disk label
+    
   fi
 
   # If the disk label is not GPT, exit

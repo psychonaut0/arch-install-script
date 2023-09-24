@@ -49,6 +49,9 @@ select_partition() {
   if ((partition_number == ${#dev[@]})); then
     clear
     echo -e "${GREEN}Creating new partition${NC}"
+    sleep .5 &
+    spinner
+    echo -e "\n"
     create_partition "$selected_disk" "$selected_partition_var" "$partition_type_check"
     return
   fi
