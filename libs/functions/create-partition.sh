@@ -146,11 +146,19 @@ create_partition() {
   echo -e "Start sector: ${GREEN}$start_sector${NC}"
   echo -e "End sector: ${GREEN}$end_sector${NC}"
 
-  exit 1
+  # Confirm the creation of the partition
+  read -p "Confirm the creation of the partition (y/n): " confirm
+  if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+    clear
+    echo -e "${RED}Partition creation aborted${NC}"
+    create_partition "$selected_disk" "$selected_partition_var" "$partition_type_check" "$start_sector"
+  fi  
   
-  
-  # parted -s "$selected_disk" mkpart "$new_partition_name" "$new_partition_type" "$start_sector" "$end_sector" &
-  # spinner
+  echo -e "${CYAN}Creating new $new_partition_name partition...${NC}"
+  parted -s "$selected_disk" mkpart "$new_partition_name" "$new_partition_type" "$start_sector" "$end_sector" &
+  spinner
+  sleep .5 &
+  spinner
 
   # Get the new partition number (eg. 1, 2, 3, etc.)
   local new_partition_number=$(parted -s "$selected_disk" unit MB print free | grep "$new_partition_name" | awk '{print $1}')
@@ -166,6 +174,14 @@ create_partition() {
 
   # Get the new created partition (eg. /dev/sda1)
   local new_partition=$(fdisk -l "$selected_disk" | grep "$new_partition_number" | awk '{print $1}')
+
+  clear
+  # Print the new partition
+  echo -e "${GREEN}New partition: $new_partition${NC}"
+
+  # Press enter to continue
+  read -p "Press enter to continue..."
+  clear
 
 
   # Set the new partition

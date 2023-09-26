@@ -51,7 +51,7 @@ select_partition() {
     echo -e "${GREEN}Creating new partition${NC}"
     sleep .5 &
     spinner
-    echo -e "\n"
+    clear
     create_partition "$selected_disk" "$selected_partition_var" "$partition_type_check"
     return
   fi
