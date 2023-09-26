@@ -173,9 +173,8 @@ create_partition() {
 
 
   # Get the new created partition (eg. /dev/sda1)
-  local new_partition=$(fdisk -l "$selected_disk" | grep "$new_partition_number" | awk '{print $1}')
+  local new_partition=$(blkid -o device -t PARTLABEL="$new_partition_name")
 
-  clear
   # Print the new partition
   echo -e "${GREEN}New partition: $new_partition${NC}"
 
@@ -185,5 +184,5 @@ create_partition() {
 
 
   # Set the new partition
-  eval "$selected_partition_var=$new_partition_name"
+  eval "$selected_partition_var=$new_partition"
 }
