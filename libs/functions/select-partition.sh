@@ -10,7 +10,7 @@ select_partition() {
   printf "%-3s%-25s%-11s%s\n" "#" "Device" "Size" "Type"
 
   # Loop through the partitions and print information
-  for device in $(fdisk -l | sed -n '/^[/]/p' | awk '{print $1}'); do
+  for device in $(fdisk -l $selected_disk | sed -n '/^[/]/p' | awk '{print $1}'); do
     count=$((count+1))
     dev[$count]=$device
 

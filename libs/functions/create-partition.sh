@@ -145,6 +145,9 @@ create_partition() {
   echo -e "Partition size: ${GREEN}$partition_size${NC}"
   echo -e "Start sector: ${GREEN}$start_sector${NC}"
   echo -e "End sector: ${GREEN}$end_sector${NC}"
+
+  exit 1
+  
   
   # parted -s "$selected_disk" mkpart "$new_partition_name" "$new_partition_type" "$start_sector" "$end_sector" &
   # spinner
