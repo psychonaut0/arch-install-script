@@ -116,19 +116,23 @@ create_partition() {
   if [[ "$partition_size" == "100%" ]]; then
     end_sector="100%"
   else
-  # If the start sector is 0%, set the end sector to the partition size 
-  # Check if the same unit is used for the start sector and the partition size
-    if [[ "$start_sector_unit" != "$partition_size_unit" ]]; then
-      # Convert the start sector to the same unit as the partition size and change the start sector unit
-      if [[ "$start_sector_unit" == "GiB" ]]; then
-        start_sector_number=$(echo "$start_sector_number * 1024" | bc)
-        start_sector_unit="MiB"
-      elif [[ "$start_sector_unit" == "MiB" ]]; then
-        start_sector_number=$(echo "$start_sector_number / 1024" | bc)
-        start_sector_unit="GiB"
-    fi
-    end_sector=$(echo "$partition_size_number + $start_sector_number" | bc)"$partition_size_unit"
-  fi
+    # If the start sector is 0%, set the end sector to the partition size 
+    if [[ "$start_sector" == "0%" ]]; then
+      end_sector="$partition_size"
+    else
+      # Check if the same unit is used for the start sector and the partition size
+      if [[ "$start_sector_unit" != "$partition_size_unit" ]]; then
+        # Convert the start sector to the same unit as the partition size and change the start sector unit
+        if [[ "$start_sector_unit" == "GiB" ]]; then
+          start_sector_number=$(echo "$start_sector_number * 1024" | bc)
+          start_sector_unit="MiB"
+        elif [[ "$start_sector_unit" == "MiB" ]]; then
+          start_sector_number=$(echo "$start_sector_number / 1024" | bc)
+          start_sector_unit="GiB"
+        fi
+        end_sector=$(echo "$partition_size_number + $start_sector_number" | bc)"$partition_size_unit"
+      fi
+    fi 
   fi 
 
 
