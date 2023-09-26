@@ -55,7 +55,7 @@ create_partition() {
       new_partition_name="ROOT"
       ;;
     "8200")
-      new_partition_name="SWAP"2
+      new_partition_name="SWAP"
       ;;
     *)
       # If no partition type is passed as parameter, return invalid
@@ -75,10 +75,11 @@ e
 
    # Check for valid number if not empty
   if [[ "$partition_size" != "" ]]; then
-    # Check if the number is valid
-    if ! [[ "$partition_size" =~ ^[0-9]+(\.[0-9]+)?%?$ ]]; then
+    # Check if the number with unit is valid
+    if [[ ! "$partition_size" =~ ^[0-9.]+[a-zA-Z]+$ ]]; then
       echo -e "${RED}Invalid number${NC}"
-      exit 1
+      clear
+      create_partition "$selected_disk" "$selected_partition_var" "$partition_type_check" "$start_sector"
     fi
     # split the number and the unit
     local partition_size_number=$(echo "$partition_size" | sed 's/[a-zA-Z]//g')
