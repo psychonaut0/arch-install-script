@@ -89,12 +89,19 @@ create_partition() {
       echo -e "${RED}Invalid unit${NC}"
       create_partition "$selected_disk" "$selected_partition_var" "$partition_type_check" "$start_sector"
     fi
+    if [[ "$partition_size_unit" == "GiB" ]]; then
+      local partition_size_bytes=$(echo "$partition_size_number * 1024 * 1024 * 1024" | bc)
+    elif [[ "$partition_size_unit" == "MiB" ]]; then
+      local partition_size_bytes=$(echo "$partition_size_number * 1024 * 1024" | bc)
+    fi
+
+    local free_space_bytes=$(echo "$free_space * 1024 * 1024 * 1024" | bc)
     # If the number is greater than the free space, reask for the partition size
-    if [[ "$partition_size_unit" == "GiB" ]] && (( $(echo "$partition_size_number > $free_space" | bc -l) )); then
+    if (( $partition_size_bytes > $free_space_bytes )); then
       clear
       echo -e "${RED}The number is greater than the free space${NC}"
       create_partition "$selected_disk" "$selected_partition_var" "$partition_type_check" "$start_sector"
-    fi 
+    fi
   fi
 
   # If partition size is empty, use all the free space
