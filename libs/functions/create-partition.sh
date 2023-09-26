@@ -64,7 +64,6 @@ create_partition() {
       ;;
   esac
 
-e
   # Get the free space
   local free_space=$(parted -s "$selected_disk" unit GiB print free | grep "Free Space" | awk '{print $3}' | sed 's/GiB//g')
 
@@ -84,15 +83,16 @@ e
     # split the number and the unit
     local partition_size_number=$(echo "$partition_size" | sed 's/[a-zA-Z]//g')
     local partition_size_unit=$(echo "$partition_size" | sed 's/[0-9.]//g')
-    # If the unit is not GiB or MiB, exit
+    # If the unit is not GiB or MiB, reask for the partition size
     if [[ "$partition_size_unit" != "GiB" ]] && [[ "$partition_size_unit" != "MiB" ]]; then
       echo -e "${RED}Invalid unit${NC}"
-      exit 1
+      clear
+      create_partition "$selected_disk" "$selected_partition_var" "$partition_type_check" "$start_sector"
     fi
-    # If the number is greater than the free space, exit
+    # If the number is greater than the free space, reask for the partition size
     if [[ "$partition_size_unit" == "GiB" ]] && (( $(echo "$partition_size_number > $free_space" | bc -l) )); then
       echo -e "${RED}The number is greater than the free space${NC}"
-      exit 1
+      create_partition "$selected_disk" "$selected_partition_var" "$partition_type_check" "$start_sector"
     fi 
   fi
 
