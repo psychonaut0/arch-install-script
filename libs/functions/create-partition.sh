@@ -65,7 +65,7 @@ create_partition() {
   esac
 
   # Get the free space
-  local free_space=$(parted -s "$selected_disk" unit GiB print free | grep "Free Space" | awk '{print $3}' | sed 's/GiB//g')
+  local free_space=$(parted -s "$selected_disk" unit GiB print free | grep "Free Space" | tail -n 1 | awk '{print $3}' | sed 's/GiB//g')
 
   echo -e "${CYAN}Creating new $new_partition_name partition${NC}"
   echo -e "Free space: ${GREEN}$free_space GiB${NC}"
