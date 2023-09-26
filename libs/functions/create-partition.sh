@@ -110,10 +110,6 @@ create_partition() {
       echo -e "${RED}The number is greater than the free space${NC}"
       create_partition "$selected_disk" "$selected_partition_var" "$partition_type_check" "$start_sector"
     fi
-      clear
-      echo -e "${RED}The number is greater than the free space${NC}"
-      create_partition "$selected_disk" "$selected_partition_var" "$partition_type_check" "$start_sector"
-    fi
   fi
 
   # If partition size is empty, use all the free space
