@@ -142,11 +142,11 @@ create_partition() {
           start_sector_number=$(echo "$start_sector_number * 1024" | bc)
           start_sector_unit="MiB"
         elif [[ "$start_sector_unit" == "MiB" ]]; then
-          start_sector_number=$(echo "$start_sector_number / 1024" | bc)
+          start_sector_number=$(echo "scale=2;$start_sector_number / 1024" | bc)
           start_sector_unit="GiB"
         fi
-        end_sector=$(echo "$partition_size_number + $start_sector_number" | bc)"$partition_size_unit"
       fi
+      end_sector=$(echo "$partition_size_number + $start_sector_number" | bc)"$partition_size_unit"
     fi 
   fi 
 
