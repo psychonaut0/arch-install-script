@@ -4,6 +4,7 @@ select_partition() {
   local selected_disk=$1
   local selected_partition_var=$2
   local partition_type_check=$3
+  local start_sector=$4
   local count=0
 
   # Print headers
@@ -52,7 +53,9 @@ select_partition() {
     sleep .5 &
     spinner
     clear
-    create_partition "$selected_disk" "$selected_partition_var" "$partition_type_check"
+    # Get the last sector of the last partition
+    start_sector=$(parted -s $selected_disk unit MiB print | grep "^ [0-9]" | tail -n 1 | awk '{print $3}')
+    create_partition "$selected_disk" "$selected_partition_var" "$partition_type_check" "$start_sector"
     return
   fi
 
