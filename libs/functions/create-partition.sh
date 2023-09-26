@@ -76,8 +76,8 @@ create_partition() {
   if [[ "$partition_size" != "" ]]; then
     # Check if the number with unit is valid
     if [[ ! "$partition_size" =~ ^[0-9.]+[a-zA-Z]+$ ]]; then
-      echo -e "${RED}Invalid number${NC}"
       clear
+      echo -e "${RED}Invalid number${NC}"
       create_partition "$selected_disk" "$selected_partition_var" "$partition_type_check" "$start_sector"
     fi
     # split the number and the unit
@@ -85,12 +85,13 @@ create_partition() {
     local partition_size_unit=$(echo "$partition_size" | sed 's/[0-9.]//g')
     # If the unit is not GiB or MiB, reask for the partition size
     if [[ "$partition_size_unit" != "GiB" ]] && [[ "$partition_size_unit" != "MiB" ]]; then
-      echo -e "${RED}Invalid unit${NC}"
       clear
+      echo -e "${RED}Invalid unit${NC}"
       create_partition "$selected_disk" "$selected_partition_var" "$partition_type_check" "$start_sector"
     fi
     # If the number is greater than the free space, reask for the partition size
     if [[ "$partition_size_unit" == "GiB" ]] && (( $(echo "$partition_size_number > $free_space" | bc -l) )); then
+      clear
       echo -e "${RED}The number is greater than the free space${NC}"
       create_partition "$selected_disk" "$selected_partition_var" "$partition_type_check" "$start_sector"
     fi 
@@ -115,13 +116,14 @@ create_partition() {
   if [[ "$partition_size" == "100%" ]]; then
     end_sector="100%"
   else
+  # If the start sector is 0%, set the end sector to the partition size 
   # Check if the same unit is used for the start sector and the partition size
     if [[ "$start_sector_unit" != "$partition_size_unit" ]]; then
       # Convert the start sector to the same unit as the partition size and change the start sector unit
       if [[ "$start_sector_unit" == "GiB" ]]; then
         start_sector_number=$(echo "$start_sector_number * 1024" | bc)
         start_sector_unit="MiB"
-      else
+      elif [[ "$start_sector_unit" == "MiB" ]]; then
         start_sector_number=$(echo "$start_sector_number / 1024" | bc)
         start_sector_unit="GiB"
     fi
@@ -141,7 +143,7 @@ create_partition() {
   echo -e "End sector: ${GREEN}$end_sector${NC}"
   
   # parted -s "$selected_disk" mkpart "$new_partition_name" "$new_partition_type" "$start_sector" "$end_sector" &
-  spinner
+  # spinner
 
   # Get the new partition number (eg. 1, 2, 3, etc.)
   local new_partition_number=$(parted -s "$selected_disk" unit MB print free | grep "$new_partition_name" | awk '{print $1}')
