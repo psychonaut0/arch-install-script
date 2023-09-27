@@ -39,3 +39,5 @@ echo "Root partition: $ROOT_PARTITION"
 echo "Swap partition: $SWAP_PARTITION"
 
 
+exit 1
+

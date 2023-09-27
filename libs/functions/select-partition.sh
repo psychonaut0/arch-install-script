@@ -34,7 +34,7 @@ select_partition() {
   if ! [[ "$partition_number" =~ ^[0-9]+$ ]]; then
     clear
     echo -e "${RED}Insert a valid number.${NC}"
-    select_partition "$selected_disk" "$selected_partition_var"
+    select_partition "$selected_disk" "$selected_partition_var" "$partition_type_check"
     return
   fi
 
@@ -42,7 +42,7 @@ select_partition() {
   if ((partition_number < 1 || partition_number > ${#dev[@]})); then
     clear
     echo -e "${RED}Invalid number. choose a number from the list${NC}"
-    select_partition "$selected_disk" "$selected_partition_var" 
+    select_partition "$selected_disk" "$selected_partition_var" "$partition_type_check"
     return
   fi
 
@@ -72,8 +72,12 @@ select_partition() {
   fi
 
   # If partition is non empty, ask for confirmation
+  local selected_partition_free_space
+  get_free_space "${dev[partition_number]}" selected_partition_free_space
+
   local selected_partition_size=$(lsblk -n -o SIZE "${dev[partition_number]}")
-  if [[ "$selected_partition_size" != "0B" ]]; then
+
+  if [[ "$selected_partition_free_space" != "$selected_partition_size" ]]; then
     read -p "$(echo -e ${YELLOW}The selected partition is not empty. Are you sure you want to use it? [y/N]${NC}) " confirm
     if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
       select_partition "$selected_disk" "$selected_partition_var" "$partition_type_check"
