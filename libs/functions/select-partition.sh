@@ -76,6 +76,9 @@ select_partition() {
   get_free_space "${dev[partition_number]}" selected_partition_free_space
 
   local selected_partition_size=$(lsblk -n -o SIZE "${dev[partition_number]}")
+  # Remove the unit from the size
+  selected_partition_size=$(echo "$selected_partition_size" | sed 's/[a-zA-Z]//g')
+  selected_partition_free_space=$(echo "$selected_partition_free_space" | sed 's/[a-zA-Z]//g')
 
   if [[ "$selected_partition_free_space" != "$selected_partition_size" ]]; then
     read -p "$(echo -e ${YELLOW}The selected partition is not empty. Are you sure you want to use it? [y/N]${NC}) " confirm
