@@ -188,7 +188,7 @@ create_partition() {
 
 
   # Get the new created partition (eg. /dev/sda1)
-  local new_partition=$(blkid -o device -t PARTLABEL="$new_partition_name")
+  local new_partition=$(blkid -o device -t PARTLABEL="$new_partition_name" | grep "$selected_disk")
 
   # Print the new partition
   echo -e "${GREEN}New partition: $new_partition${NC}"
