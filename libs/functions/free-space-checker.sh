@@ -7,7 +7,7 @@ get_free_space() {
   mount "$partition" /mnt 2>&1 | grep "wrong fs type, bad option, bad superblock" > /dev/null
   if [[ $? -eq 0 ]]; then
     # If the error is given, partition is not formatted so its free space is the partition size
-    local free_space=$(lsblk -n -o SIZE "$partition")
+    local free_space=$(lsblk -n -o SIZE "$partition" | sed 's/ //g')
   else
     # If the error is not given, partition is formatted so its free space is the available space
     local free_space=$(df -h | grep "$partition" | awk '{print $4}')
