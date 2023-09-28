@@ -2,7 +2,7 @@
 
 get_free_space() {
   local partition=$1
-  local free_space=$2
+  local free_space_var=$2
   # Mount the partition to /mnt and check if mount gives wrong fs type error
   mount "$partition" /mnt 2>&1 | grep "wrong fs type, bad option, bad superblock" > /dev/null
   if [[ $? -eq 0 ]]; then
@@ -15,8 +15,6 @@ get_free_space() {
     umount "$partition"
   fi
 
-
-
-  # Assign the free space to the variable passed as parameter
-  eval "$free_space='$free_space'"
+  # Assign the free space to the specified variable
+  eval "$free_space_var='$free_space'"
 }
