@@ -39,5 +39,14 @@ echo "Root partition: $ROOT_PARTITION"
 echo "Swap partition: $SWAP_PARTITION"
 
 
+read -p "Do you want to continue? [Y/n] " -n 1 -r
+
+format_partition $BOOT_PARTITION "fat32"
+format_partition $ROOT_PARTITION "ext4"
+format_partition $SWAP_PARTITION "linux-swap"
+
+
+
+
 exit 1
 
