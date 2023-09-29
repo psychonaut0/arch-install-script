@@ -18,13 +18,12 @@ format_partition() {
   selected_partition_free_space=$(echo "$selected_partition_free_space" | sed 's/[a-zA-Z]//g')
 
   if [[ "$selected_partition_free_space" != "$selected_partition_size" ]]; then
-    read -p "$(echo -e ${YELLOW}The selected partition is not empty. Are you sure you want to use it? [y/N]${NC}) " confirm
+    read -p "$(echo -e ${YELLOW}The selected partition is not empty. Do you want to format it? [y/N]${NC}) " confirm
     if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
-      exit 1
       return
     fi
-    clear
   fi
+  clear
   echo -e "Formatting partition ${GREEN}$selected_partition${NC} with type ${GREEN}$partition_type${NC}"
   
   case "$partition_type" in
@@ -42,7 +41,6 @@ format_partition() {
       exit 1
       ;;
   esac
-  
 
   spinner
 }

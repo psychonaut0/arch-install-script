@@ -10,9 +10,14 @@ source "${CURRENT_DIR}/libs/main.sh"
 root_checker
 clear
 
-sleep 2 &
+sleep .5 &
 spinner 
 
+echo -e "${GREEN}Welcome to the Arch Linux installer${NC}"
+echo -e "Current disks: \n "
+fdisk -l
+read -p "Press enter to continue..."
+clear
 
 select_disk SELECTED_DISK
 clear
@@ -42,9 +47,18 @@ echo "Swap partition: $SWAP_PARTITION"
 read -p "Do you want to continue? [Y/n] " -n 1 -r
 
 format_partition $BOOT_PARTITION "fat32"
+clear
 format_partition $ROOT_PARTITION "ext4"
+clear
 format_partition $SWAP_PARTITION "linux-swap"
+clear
 
+echo -e "${GREEN}Mounting partitions${NC}"
+mount $ROOT_PARTITION /mnt
+mkdir /mnt/boot
+mount $BOOT_PARTITION /mnt/boot
+swapon $SWAP_PARTITION
+clear
 
 
 
