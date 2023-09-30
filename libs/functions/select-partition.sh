@@ -54,7 +54,7 @@ select_partition() {
     spinner
     clear
     # Get the last sector of the last partition
-    start_sector=$(parted -s $selected_disk unit MiB print | grep "^ [0-9]" | tail -n 1 | awk '{print $3}')
+    start_sector=$(parted -s $selected_disk unit B print free | grep "Free Space" | tail -n 1 | awk '{print $1}')
     create_partition "$selected_disk" "$selected_partition_var" "$partition_type_check" "$start_sector"
     return
   fi
