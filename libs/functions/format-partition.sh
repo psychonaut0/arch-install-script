@@ -9,10 +9,10 @@ format_partition() {
   get_free_space "$selected_partition" free_space
 
   local selected_partition_free_space
-  get_free_space "${dev[partition_number]}" selected_partition_free_space
+  get_free_space "$selected_partition" selected_partition_free_space
 
   # Get the selected partition size and remove spaces
-  local selected_partition_size=$(lsblk -n -o SIZE "${dev[partition_number]}" | sed 's/ //g')
+  local selected_partition_size=$(lsblk -n -o SIZE "$selected_partition" | sed 's/ //g')
   # Remove the unit from the size
   selected_partition_size=$(echo "$selected_partition_size" | sed 's/[a-zA-Z]//g')
   selected_partition_free_space=$(echo "$selected_partition_free_space" | sed 's/[a-zA-Z]//g')
@@ -28,7 +28,7 @@ format_partition() {
   fi
   clear
   echo -e "${GREEN}Free space: $selected_partition_free_space${NC}"
-  echo -e "${GREEN}Partition size: $selected_partition_size${NC}"
+  echo -e "${GREEN}Partition size: $selected_partition_size${NC}"1
   # Ask for confirmation anyway
   read -p "$(echo -e ${YELLOW}Are you sure you want to format the partition? [y/N]${NC}) " confirm
   if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
