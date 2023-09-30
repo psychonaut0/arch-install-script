@@ -17,6 +17,9 @@ format_partition() {
   selected_partition_size=$(echo "$selected_partition_size" | sed 's/[a-zA-Z]//g')
   selected_partition_free_space=$(echo "$selected_partition_free_space" | sed 's/[a-zA-Z]//g')
 
+
+
+
   if [[ "$selected_partition_free_space" != "$selected_partition_size" ]]; then
     read -p "$(echo -e ${YELLOW}The selected partition is not empty. Do you want to format it? [y/N]${NC}) " confirm
     if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
@@ -24,6 +27,13 @@ format_partition() {
     fi
   fi
   clear
+  echo -e "${GREEN}Free space: $selected_partition_free_space${NC}"
+  echo -e "${GREEN}Partition size: $selected_partition_size${NC}"
+  # Ask for confirmation anyway
+  read -p "$(echo -e ${YELLOW}Are you sure you want to format the partition? [y/N]${NC}) " confirm
+  if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+    return
+  fi
   echo -e "Formatting partition ${GREEN}$selected_partition${NC} with type ${GREEN}$partition_type${NC}"
   
   case "$partition_type" in
