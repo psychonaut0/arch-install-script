@@ -137,16 +137,14 @@ create_partition() {
     else
       # Check if the same unit is used for the start sector and the partition size
       if [[ "$start_sector_unit" != "$partition_size_unit" ]]; then
-        # Convert the start sector to the same unit as the partition size and change the start sector unit
-        if [[ "$start_sector_unit" == "GiB" ]]; then
-          start_sector_number=$(echo "$start_sector_number * 1024" | bc)
-          start_sector_unit="MiB"
-        elif [[ "$start_sector_unit" == "MiB" ]]; then
-          start_sector_number=$(echo "scale=2;$start_sector_number / 1024" | bc)
-          start_sector_unit="GiB"
+        # Convert the end sector in Bytes
+        if [[ "$partition_size_unit" == "GiB" ]]; then
+          partition_size_bytes=$(echo "$partition_size_number * 1024 * 1024 * 1024" | bc)
+        elif [[ "$partition_size_unit" == "MiB" ]]; then
+          partition_size_bytes=$(echo "$partition_size_number * 1024 * 1024" | bc)
         fi
       fi
-      end_sector=$(echo "$partition_size_number + $start_sector_number" | bc)"$partition_size_unit"
+      end_sector=$(echo "$partition_size_number + $start_sector_number" | bc)"B"
     fi 
   fi 
 
@@ -159,7 +157,10 @@ create_partition() {
   echo -e "Partition type: ${GREEN}$new_partition_type${NC}"
   echo -e "Partition size: ${GREEN}$partition_size${NC}"
   echo -e "Start sector: ${GREEN}$start_sector${NC}"
-  echo -e "End sector: ${GREEN}$end_sector${NC}"
+  #print end sector in GiB if not 100%
+  if [[ "$end_sector" != "100%" ]]; then
+    echo -e "End sector: ${GREEN}$(echo "scale=2;$start_sector_number / 1024 / 1024" | bc){NC}"
+  fi
 
   # Confirm the creation of the partition
   read -p "Confirm the creation of the partition (y/n): " confirm
