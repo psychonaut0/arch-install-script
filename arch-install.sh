@@ -87,7 +87,7 @@ cp -r $CURRENT_DIR /mnt/root/arch-install
 
 # Chroot into the new system
 echo -e "${GREEN}Chrooting into the new system${NC}"
-arch-chroot /mnt /root/arch-install/chroot.sh
+arch-chroot /mnt sh /root/arch-install/chroot.sh
 
 # Remove the script from the new system
 rm -rf /mnt/root/arch-install
