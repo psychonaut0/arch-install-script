@@ -28,7 +28,7 @@ format_partition() {
   fi
   clear
   echo -e "${GREEN}Free space: $selected_partition_free_space${NC}"
-  echo -e "${GREEN}Partition size: $selected_partition_size${NC}"1
+  echo -e "${GREEN}Partition size: $selected_partition_size${NC}"
   # Ask for confirmation anyway
   read -p "$(echo -e ${YELLOW}Are you sure you want to format the partition? [y/N]${NC}) " confirm
   if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then

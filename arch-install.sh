@@ -44,6 +44,9 @@ echo "Boot partition: $BOOT_PARTITION"
 echo "Swap partition: $SWAP_PARTITION"
 echo "Root partition: $ROOT_PARTITION"
 
+# Label root partition
+echo -e "${GREEN}Labeling root partition${NC}"
+e2label $ROOT_PARTITION ARCH_OS
 
 read -p "Do you want to continue? [Y/n] " -n 1 -r
 
@@ -60,6 +63,43 @@ mkdir /mnt/boot
 mount $BOOT_PARTITION /mnt/boot
 swapon $SWAP_PARTITION
 clear
+
+echo -e "${GREEN}Installing base packages${NC}"
+pacstrap -K /mnt base base-devel linux linux-firmware vim networkmanager git zsh 
+
+# Choose to mount other partitions
+read -p "Do you want to mount other existing partitions? [Y/n] " -n 1 -r
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+  clear
+  mount_otther_partition
+fi
+clear
+
+
+# Generate fstab
+echo -e "${GREEN}Generating fstab${NC}"
+genfstab -U /mnt >> /mnt/etc/fstab &
+spinner
+
+# Copy the script to the new system
+cp -r $CURRENT_DIR /mnt/root/arch-install
+
+# Chroot into the new system
+echo -e "${GREEN}Chrooting into the new system${NC}"
+arch-chroot /mnt /root/arch-install/chroot.sh
+
+# Remove the script from the new system
+rm -rf /mnt/root/arch-install
+
+# Unmount all partitions
+echo -e "${GREEN}Unmounting all partitions${NC}"
+umount -R /mnt
+
+echo -e "${GREEN}Installation complete!${NC}"
+echo -e "${GREEN}Rebooting in 5 seconds...${NC}"
+sleep 5
+reboot ||
 
 
 
