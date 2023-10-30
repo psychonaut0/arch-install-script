@@ -188,13 +188,10 @@ mkdir -p /etc/systemd/system/getty@tty1.service.d
 touch /etc/systemd/system/getty@tty1.service.d/autologin.conf
 echo "[Service]" >> /etc/systemd/system/getty@tty1.service.d/autologin.conf
 echo "ExecStart=" >> /etc/systemd/system/getty@tty1.service.d/autologin.conf
-echo "ExecStart=-/sbin/agetty -o '-p -- username' --noclear --skip-login - $TERM" >> /etc/systemd/system/getty@tty1.service.d/autologin.conf
+echo "ExecStart=-/sbin/agetty -o '-p -- $USERNAME' --noclear --skip-login --nonewline --noissue - $TERM" >> /etc/systemd/system/getty@tty1.service.d/autologin.conf
 
 # Install plymouth
 pacman -S plymouth --noconfirm
-
-
-
 
 # Install picom to get dependencies
 pacman -S picom --noconfirm
