@@ -51,10 +51,8 @@ echo "options root=LABEL=ARCH_OS rw quiet splash" >> /boot/loader/entries/arch.c
 sed -i 's/#ParallelDownloads = 5/ParallelDownloads = 10/g' /etc/pacman.conf
 
 # Enable multilib in pacman
-local mline=$(grep -n "\\[multilib\\]" /etc/pacman.conf | cut -d: -f1)
-local rline=$(($mline + 1))
-sed -i ''$mline's|#\[multilib\]|\[multilib\]|g' /etc/pacman.conf
-sed -i ''$rline's|#Include = /etc/pacman.d/mirrorlist|Include = /etc/pacman.d/mirrorlist|g' /etc/pacman.conf
+echo "[multilib]" >> /etc/pacman.conf
+echo "Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
 
 # Update pacman
 pacman -Syu --noconfirm
@@ -68,10 +66,12 @@ if [[ $vendor_id == "GenuineIntel" ]]; then
   pacman -S thermald --noconfirm
   systemctl enable thermald
   pacman -S i7z --noconfirm
-else
+elif [[ $vendor_id == "AuthenticAMD" ]]; then
   # Install amd-ucode
   pacman -S amd-ucode --noconfirm
   pacman -S turbostat --noconfirm
+else
+  echo "No cpu found"
 fi
 
 # Create a new user
@@ -87,6 +87,12 @@ sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
 
 # Install zsh
 pacman -S zsh --noconfirm
+
+# Change the default shell to zsh
+chsh -s /bin/zsh
+
+# log in as the new user
+su $USERNAME
 
 # Install oh-my-zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -139,12 +145,14 @@ elif [[ $gpu == "AMD" ]]; then
   pacman -S vulkan-radeon --noconfirm
   pacman -S lib32-mesa --noconfirm
   pacman -S lib32-vulkan-radeon --noconfirm
-else
+elif [[ $gpu == "NVIDIA" ]]; then
   # Install nvidia drivers
   pacman -S nvidia --noconfirm
   pacman -S nvidia-utils --noconfirm
   pacman -S lib32-nvidia-utils --noconfirm
   pacman -S nvidia-settings --noconfirm
+else
+  echo "No gpu found"
 fi
 
 

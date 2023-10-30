@@ -82,6 +82,8 @@ echo -e "${GREEN}Generating fstab${NC}"
 genfstab -U /mnt >> /mnt/etc/fstab &
 spinner
 
+CURRENT_DIR="$(dirname "${BASH_SOURCE[0]}")"
+
 # Copy the script to the new system
 cp -r $CURRENT_DIR /mnt/root/arch-install
 
